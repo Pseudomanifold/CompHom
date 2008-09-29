@@ -1,0 +1,17 @@
+#ifndef CT_CT_H
+#define CT_CT_H
+
+#include <vector>
+
+using namespace std;
+
+#include "matrix.h"
+#include "simplex.h"
+#include "chain.h"
+
+vector< vector<simplex> > process_file(const char* filename);
+vector<simplex> find_generators(vector<chain> chains);
+size_t generator_position(vector<simplex> generators, simplex generator);
+matrix create_matrix(vector<simplex> generators, vector<chain> boundaries);
+
+#endif
