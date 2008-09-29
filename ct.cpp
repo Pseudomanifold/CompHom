@@ -38,21 +38,22 @@ int main(int argc, char* argv[])
 		vector<chain> boundaries;
 		for(size_t j = 0; j < data[i].size(); j++)
 			boundaries.push_back(data[i][j].boundary());
-	
+
 		cout << "(";
-		for(size_t dim = 0; dim < 2; dim++)
+		for(size_t dim = 0; dim < 3; dim++)
 		{
 			vector<simplex> generators 	= find_generators(boundaries);
 			matrix matrix_boundaries 	= create_matrix(generators, boundaries);
 			matrix matrix_snf		= matrix_boundaries.nf_smith();
 
-			/*
 
 			// DEBUG
 
+			/*
+			
 			matrix_boundaries.print();
 			matrix_snf.print();	
-			cout << "\n\n";
+			
 			*/
 
 			// Output/store the values for the next dimension
@@ -65,7 +66,6 @@ int main(int argc, char* argv[])
 			w_prev = matrix_snf.get_num_non_zero_rows();
 			b_prev = matrix_snf.get_torsion();
 
-
 			// Prepare the generators for the next run
 
 			boundaries.clear();
@@ -76,97 +76,7 @@ int main(int argc, char* argv[])
 		cout << "1)\n";
 	}
 
-	/*
-	simplex s1, s2, s3, s4;
-
-	s1.vertices.push_back(1);
-	s1.vertices.push_back(2);
-	s1.vertices.push_back(3);
-
-	s2.vertices.push_back(1);
-	s2.vertices.push_back(2);
-	s2.vertices.push_back(4);
-
-	s3.vertices.push_back(1);
-	s3.vertices.push_back(3);
-	s3.vertices.push_back(4);
-
-	s4.vertices.push_back(2);
-	s4.vertices.push_back(3);
-	s4.vertices.push_back(4);
-
-	cout << "Triangulation: ";
-	s1.print(); cout << ", ";
-	s2.print(); cout << ", ";
-	s3.print(); cout << ", ";
-	s4.print(); cout << "\n\n";
-
-	chain c1,c2,c3,c4;
-	c1 = s1.boundary();
-	c2 = s2.boundary();
-	c3 = s3.boundary();
-	c4 = s4.boundary();
-
-	cout << "Boundaries:\n";
-	c1.print();
-	c2.print();
-	c3.print();
-	c4.print();
-	cout << "\n\n";
-
-	vector<chain> boundaries;
-	boundaries.push_back(c1);
-	boundaries.push_back(c2);
-	boundaries.push_back(c3);
-	boundaries.push_back(c4);
-
-	vector<simplex> generators = find_generators(boundaries);
-	
-	cout << "Generators:\n";
-	for(size_t i = 0; i < generators.size(); i++)
-	{
-		cout << (i+1) << ": "; 
-		generators[i].print();
-		cout << "\n";
-	}
-	cout << "\n\n";
-
-	cout << "Boundary matrix:\n";
-	matrix boundary = create_matrix(generators, boundaries);
-	boundary.print();
-
-	cout << "In SNF:\n";
-	boundary.nf_smith().print();
-
-	// Dimension 02
-
-	cout << "Boundaries:\n";
-	boundaries.clear();
-	for(size_t i = 0; i < generators.size(); i++)
-	{
-		generators[i].boundary().print();	
-		boundaries.push_back(generators[i].boundary());
-	}
-
-	generators = find_generators(boundaries);	
-	cout << "Generators:\n";
-	for(size_t i = 0; i < generators.size(); i++)
-	{
-		cout << (i+1) << ": "; 
-		generators[i].print();
-		cout << "\n";
-	}
-	cout << "\n\n";
-
-	cout << "Boundary matrix:\n";
-	boundary = create_matrix(generators, boundaries);
-	boundary.print();
-
-	cout << "In SNF:\n";
-	boundary.nf_smith().print();
-
 	return(0);
-	*/
 }
 
 /// Given a set of boundaries, this algorithm determines the generators
@@ -272,7 +182,13 @@ matrix create_matrix(vector<simplex> generators, vector<chain> boundaries)
 		for(size_t j = 0; j < boundaries[i].elements.size(); j++)
 		{
 			size_t pos = generator_position(generators, boundaries[i].elements[j].s);
-			col[pos] = boundaries[i].elements[j].c;
+
+			// This ensures that only non-empty simplices get assigned non-zero
+			// values within the boundary matrix.
+			if(boundaries[i].elements[j].s.vertices.size() > 0)
+				col[pos] = boundaries[i].elements[j].c;
+			else
+				col[pos] = 0;	
 		}
 
 		// Store the column

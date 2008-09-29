@@ -280,26 +280,8 @@ size_t matrix::get_num_cols(void)
 
 size_t matrix::get_num_zero_cols(void)
 {
-	size_t cols = 0; 
-	/*bool zero;
-	for(size_t j = 0; j < get_num_cols(); j++)
-	{
-		zero = true;
-		for(size_t i = 0; i < data.size(); i++)
-		{
-			if(data[i][j] != 0)
-			{
-				zero = false;
-				break;
-			}
-		}
-
-		if(zero)
-			cols++;
-	}
-	*/
-
-	for(size_t i = 0; i < get_num_cols() && i < get_num_rows(); i++)
+	size_t i = 0;
+	for(; i < get_num_cols() && i < get_num_rows(); i++)
 	{
 		if(data[i][i] == 0)
 		{
@@ -307,7 +289,7 @@ size_t matrix::get_num_zero_cols(void)
 		}
 	}
 
-	return(0);
+	return(get_num_cols() - i);
 }
 
 /// Returns the number of non-zero rows in the matrix. This is used to compute
@@ -317,27 +299,7 @@ size_t matrix::get_num_zero_cols(void)
 
 size_t matrix::get_num_non_zero_rows(void)
 {
-	size_t rows 	= 0;
-	
-	/*
-	bool zero;
-	for(size_t i = 0; i < data.size(); i++)
-	{
-		zero = true;
-		for(size_t j = 0; j < data[i].size(); j++)
-		{
-			if(data[i][j] != 0)
-			{
-				zero = false;
-				break;
-			}
-		}
-
-		if(!zero)
-			rows++;
-	}
-	*/
-
+	size_t rows = 0;
 	for(size_t i = 0; i < get_num_cols() && i < get_num_rows(); i++)
 	{
 		if(data[i][i] != 0)
@@ -354,17 +316,6 @@ size_t matrix::get_num_non_zero_rows(void)
 /// @return The absolute value of the torsion coefficients.
 size_t matrix::get_torsion(void)
 {
-	/*
-	for(size_t i = 0; i < data.size(); i++)
-	{
-		if(i < data[0].size())
-		{
-			if(labs(data[i][i]) > 1)
-				return(labs(data[i][i]));
-		}
-	}
-	*/
-
 	for(size_t i = 0; i < get_num_cols() && i < get_num_rows(); i++)
 	{
 		if(labs(data[i][i]) > 1)
