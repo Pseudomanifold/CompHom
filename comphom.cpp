@@ -46,7 +46,8 @@ int main(int argc, char* argv[])
 					"Please note that this is only a DEMO program. Send all comments to\n"
 					"canmore[AT]annwfn[DOT]net.\n"
 					"\n\n";
-				break;
+
+				return(0);	
 
 			case 'i':
 				file_in = optarg;
@@ -61,8 +62,9 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	cout << "Data will be read from \"" << file_in << "\".\n";
-	cout << "Data will be written to \"" << file_out << "\".\n";
+	cout << "comphom is ready. Current options:\n"
+		"\tInput:  \"" << file_in << "\"\n"
+		"\tOutput: \"" << file_out << "\"\n\n";
 	
 	vector< vector<simplex> > data = process_file(file_in.c_str());
 
@@ -73,7 +75,13 @@ int main(int argc, char* argv[])
 		return(-1);
 	}
 
-	cout << "Computing...\n";
+	cout << "\n"
+		"The following computations might take a while -- especially if\n"
+		"large triangulations are present. Small dots will serve as a\n"
+		"progress indicator.\n\n"
+		"Computing...\n";
+
+	short dots = 0;
 	for(size_t i = 0; i < data.size(); i++)
 	{
 		if(data[i].size() == 0)
@@ -133,9 +141,17 @@ int main(int argc, char* argv[])
 		}
 		
 		out << ")\n";
+		cout << "." << flush;
+
+		dots++;
+		if(dots >= 80)
+		{
+			cout << "\n";
+			dots = 0;
+		}
 	}
 
-	cout << "...finished.\n";
+	cout << "\n...finished.\n";
 	return(0);
 }
 
@@ -262,7 +278,7 @@ vector< vector<simplex> > process_file(const char* filename)
 		lines++;
 
 		// Whole set of simplices has been read
-		if(line == "EOL")
+		if(line == "EOT")
 		{
 			result.push_back(cur_complex);
 			cur_complex.clear();
