@@ -4,7 +4,7 @@ LIBS        = -L /usr/local/lib
 INCLUDES    = -I /usr/local/include
 LDFLAGS     = 
 
-MYOBJECTS   = comphom.o matrix.o simplex.o chain.o
+MYOBJECTS   = comphom.o matrix.o simplex.o
 BIN         = comphom
 
 $(BIN): $(MYOBJECTS) Makefile

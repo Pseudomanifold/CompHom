@@ -11,13 +11,10 @@
 #include <memory>
 
 #include <getopt.h>
+#include "comphom.h"
 
 using namespace std;
 
-#include "comphom.h"
-#include "simplex.h"
-#include "chain.h"
-#include "matrix.h"
 
 int main(int argc, char* argv[])
 {
