@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 					"-o --output <file>\tWrite to <file> (default: comphom.out)\n"
 					"\n\n\n"
 					"Please note that this is only a DEMO program. Send all comments to\n"
-					"canmore[AT]annwfn[DOT]net.\n"
+					"bastian[AT]annwfn[DOT]net.\n"
 					"\n\n";
 
 				return(0);	

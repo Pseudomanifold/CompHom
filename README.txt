@@ -51,4 +51,4 @@ If you have your own triangulations, the process is even simpler:
 4. It does not work!
 
 If you have found a bug, please inform me about it
-(canmore[AT]annwfn[DOT]net).		
+(bastian[AT]annwfn[DOT]net).		
