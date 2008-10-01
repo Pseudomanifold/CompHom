@@ -1,13 +1,13 @@
 /*!
 	@file	simplex.h
-	@brief	Contains a class describing an affine n-simplex.
+	@brief	Contains classes describing affine n-simplices, simplicial i-chains
+		and more.
 */
 
 #ifndef CT_SIMPLEX_H
 #define CT_SIMPLEX_H
 
 #include <vector>
-#include "chain.h"
 
 class simplex;
 class chain;
@@ -42,6 +42,8 @@ class chain_element
 	long c;		///< chain coefficient
 	simplex s;	///< corresponding simplex
 };
+
+
 
 /*!
 	@class	chain

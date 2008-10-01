@@ -1,6 +1,7 @@
 /*!
 	@file	simplex.cpp
-	@brief	Contains implementations for the functions of the simplex class.
+	@brief	Contains implementations for the functions of the simplex class and
+		the chain class.
 */
 
 #include <iostream>
@@ -64,4 +65,20 @@ chain simplex::boundary(void)
 	}
 	
 	return(res);
+}
+
+/// Prints an i-chain to STDOUT. This is useful for displaying intermediate
+/// results and for debugging purposes.
+
+void chain::print(void)
+{
+	for(size_t i = 0; i < elements.size(); i++)
+	{
+		cout << (elements[i].c > 0 ? "+" : "");
+		cout << elements[i].c << "*";
+		
+		elements[i].s.print();
+	}
+
+	cout << "\n";
 }

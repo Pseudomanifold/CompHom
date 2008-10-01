@@ -309,19 +309,21 @@ size_t matrix::get_num_non_zero_rows(void)
 	return(rows);
 }
 
-/// Given a matrix in Smith Normal Form (which is assumed throughout 
-/// the function), return the number of elements that have an absolute
-/// value > 1. These numbers constitute the torsion coefficients.
+/// Given a matrix in Smith Normal Form (which is assumed throughout the
+/// function), return all elements that have an absolute value > 1. These
+/// numbers constitute the torsion coefficients.
 ///
-/// @return The absolute value of the torsion coefficients.
-size_t matrix::get_torsion(void)
+/// @return 	A vector that contains the absolute values of 
+///		the torsion coefficients.
+vector<unsigned long> matrix::get_torsion(void)
 {
+	vector<unsigned long> result;
 	for(size_t i = 0; i < get_num_cols() && i < get_num_rows(); i++)
 	{
 		if(labs(data[i][i]) > 1)
-			return(labs(data[i][i]));
+			result.push_back(labs(data[i][i]));
 
 	}
 
-	return(0);
+	return(result);
 }

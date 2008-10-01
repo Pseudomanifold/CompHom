@@ -33,7 +33,8 @@ class matrix
 	size_t get_num_cols(void);
 	size_t get_num_zero_cols(void);
 	size_t get_num_non_zero_rows(void);
-	size_t get_torsion(void);
+	
+	vector<unsigned long> get_torsion(void);
 	
 	private:
 

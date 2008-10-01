@@ -1,6 +1,7 @@
 /*!
-	@file 	CT.cpp
-	@brief 	Several tests for computing homology groups.
+	@file 	comphom.cpp
+	@brief 	A small demo program for computing homology groups.
+	@author Bastian Rieck
 */
 
 #include <iostream>
@@ -9,38 +10,93 @@
 #include <vector>
 #include <memory>
 
+#include <getopt.h>
+
 using namespace std;
 
-#include "ct.h"
+#include "comphom.h"
 #include "simplex.h"
 #include "chain.h"
 #include "matrix.h"
 
 int main(int argc, char* argv[])
 {
-	// At the moment, this is only a simple demonstration: A file with triangulations
-	// for several manifolds is read and processed afterwards. For each triangulation,
-	// the Smith normal form of the first boundary matrix is calculated and the result
-	// is printed out.
+	// Read command-line options
 
-	//
-	//vector< vector<simplex> > data = process_file("3_manifolds_all.txt.ct");
-	//vector< vector<simplex> > data = process_file("graph.ct");
-	//
+	string file_in = "comphom.in";
+	string file_out = "comphom.out";
+
+	static struct option cmd_line_opts[] = 
+	{
+		{"input",	required_argument,	NULL, 	'i'},
+		{"output",	required_argument,	NULL,	'o'},
+		{"help",	no_argument,		NULL,	'h'},
+		{NULL,		0,			NULL,	 0 }
+	};
+
+	int opt = 0;
+	while((opt = getopt_long(argc, argv, "i:o:h", cmd_line_opts, NULL)) != -1)
+	{
+		switch(opt)
+		{
+			case 'h':
+				cout << "Usage: comphom [options]\n"
+					"Options:\n"
+					"-h --help\t\tDisplay this information\n"
+					"-i --input <file>\tRead <file> (default: comphom.in)\n"
+					"-o --output <file>\tWrite to <file> (default: comphom.out)\n"
+					"\n\n\n"
+					"Please note that this is only a DEMO program. Send all comments to\n"
+					"canmore[AT]annwfn[DOT]net.\n"
+					"\n\n";
+				break;
+
+			case 'i':
+				file_in = optarg;
+				break;
+			
+			case 'o':
+				file_out = optarg;
+				break;
+					
+			default:
+				break;	
+		}
+	}
+
+	cout << "Data will be read from \"" << file_in << "\".\n";
+	cout << "Data will be written to \"" << file_out << "\".\n";
 	
-	vector< vector<simplex> > data = process_file("2_manifolds_all.txt.ct");
+	vector< vector<simplex> > data = process_file(file_in.c_str());
+
+	ofstream out(file_out.c_str());
+	if(!out.good())
+	{
+		cerr << "Error: Could not write to \"" << file_out << "\". Aborting...\n";
+		return(-1);
+	}
+
+	cout << "Computing...\n";
 	for(size_t i = 0; i < data.size(); i++)
 	{
-		size_t w_prev = 0;
-		size_t b_prev = 0;
-		size_t z_cur  = 0;
+		if(data[i].size() == 0)
+		{
+			cout << "Warning: Detected empty triangulation. Ignoring...\n";
+			continue;
+		}
+
+		size_t w_prev 	= 0; 		// Previous rank of the group of boundaries
+		size_t z_cur  	= 0; 		// Current rank of the group of cycles
+		vector<unsigned long> b_prev; 	// Torsion coefficients from the previous dimension
+
+		size_t max_dim 	= data[i][0].vertices.size();
 
 		vector<chain> boundaries;
 		for(size_t j = 0; j < data[i].size(); j++)
 			boundaries.push_back(data[i][j].boundary());
 
-		cout << "(";
-		for(size_t dim = 0; dim < 3; dim++)
+		out << "(";
+		for(size_t dim = 0; dim < max_dim; dim++)
 		{
 			vector<simplex> generators 	= find_generators(boundaries);
 			matrix matrix_boundaries 	= create_matrix(generators, boundaries);
@@ -59,10 +115,16 @@ int main(int argc, char* argv[])
 			// Output/store the values for the next dimension
 	
 			z_cur = matrix_snf.get_num_zero_cols();
-			cout << z_cur - w_prev;
-			if(b_prev != 0)
-				cout << "+" << b_prev;
-			cout << ",";
+			out << z_cur - w_prev;
+			if(b_prev.size() > 0)
+			{
+				for(size_t j = 0; j < b_prev.size(); j++)
+					out << "+Z_" << b_prev[j]; // It is assumed that the coefficients are integers
+			}
+			
+			if(dim < max_dim - 1)
+				out << ",";
+
 			w_prev = matrix_snf.get_num_non_zero_rows();
 			b_prev = matrix_snf.get_torsion();
 
@@ -73,9 +135,10 @@ int main(int argc, char* argv[])
 				boundaries.push_back(generators[num_gens].boundary());
 		}
 		
-		cout << "1)\n";
+		out << ")\n";
 	}
 
+	cout << "...finished.\n";
 	return(0);
 }
 
@@ -141,36 +204,6 @@ size_t generator_position(vector<simplex> generators, simplex generator)
 
 matrix create_matrix(vector<simplex> generators, vector<chain> boundaries)
 {
-
-	/****
-
-	OLD CODE
-
-	// Contains all rows that are generated during the process. This vector
-	// is then going to be assigned to the actual boundary matrix.
-	vector<long> rows;
-
-	for(size_t i = 0; i < boundaries.size(); i++)
-	{
-		long* row = new long[generators.size()];
-		memset(row, 0, generators.size()*sizeof(long));
-
-		for(size_t j = 0; j < boundaries[i].elements.size(); j++)
-		{
-			size_t pos = generator_position(generators, boundaries[i].elements[j].s);
-			row[pos] = boundaries[i].elements[j].c;
-		}
-
-		// Store the row
-
-		for(size_t j = 0; j < generators.size(); j++)
-			rows.push_back(row[j]);
-
-		delete[] row;
-	}
-	
-	****/
-
 	// Contains all columns that are generated during the process. This vector
 	// is then going to be assigned to the actual boundary matrix.
 	vector<long> cols;
@@ -201,12 +234,6 @@ matrix create_matrix(vector<simplex> generators, vector<chain> boundaries)
 
 	matrix boundary_matrix;
 
-	/************
-
-	boundary_matrix.assign(rows, boundaries.size(), generators.size());
-
-	*************/
-	
 	boundary_matrix.assign(cols, boundaries.size(), generators.size());
 	boundary_matrix.transpose();
 	return(boundary_matrix);
@@ -225,6 +252,12 @@ vector< vector<simplex> > process_file(const char* filename)
 	ifstream input(filename);
 	string line;
 
+	if(!input.good())
+	{
+		cout << "Error: Could not process \"" << filename << "\".\n";
+		return(result);
+	}
+
 	cout << "Processing \"" << filename << "\"...\n";
 
 	while(input >> line)
@@ -237,8 +270,7 @@ vector< vector<simplex> > process_file(const char* filename)
 			result.push_back(cur_complex);
 			cur_complex.clear();
 
-			//continue;
-			break;
+			continue;
 		}
 
 		// Convert the input data into to use the simplex
@@ -262,7 +294,7 @@ vector< vector<simplex> > process_file(const char* filename)
 	}
 	
 	input.close();
-	cout << "Successfully processed " << lines << " lines.\n";
+	cout << "Processed " << lines << " lines.\n";
 
 	return(result);
 }
