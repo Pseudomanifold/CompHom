@@ -10,11 +10,12 @@
 #include <vector>
 #include <memory>
 
+#include <string.h>
 #include <getopt.h>
+
 #include "comphom.h"
 
 using namespace std;
-
 
 int main(int argc, char* argv[])
 {
