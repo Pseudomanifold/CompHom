@@ -108,16 +108,6 @@ int main(int argc, char* argv[])
 			matrix matrix_boundaries 	= create_matrix(generators, boundaries);
 			matrix matrix_snf		= matrix_boundaries.nf_smith();
 
-
-			// DEBUG
-
-			/*
-			
-			matrix_boundaries.print();
-			matrix_snf.print();	
-			
-			*/
-
 			// Output/store the values for the next dimension
 	
 			z_cur = matrix_snf.get_num_zero_cols();
