@@ -35,7 +35,7 @@ First, the rank of the free part of the group is printed. Afterwards the
 torsion parts are printed in the form `Z_n`. The torsion parts will be
 concatenated via '+'. 
 
-## How do I use `comphom`...
+## How do I use `comphom`&hellip;
 
 ### &hellip;when using F. Lutz' triangulations?
 
