@@ -27,9 +27,9 @@ The Makefile should work for any POSIX-compatible operating system.
 
 Given a triangulation (or a whole bunch of them), `comphom` computes
 homology groups and writes the results to a file. One line is used per
-triangulation and if read from left to right, they descend in order. In
-other words: the highest dimension is the first group from the left, the
-lowest dimension is on the very right side of the line.
+triangulation and if read from left to right, they ascend in order. In
+other words: the lowest dimension is the first group from the left, the
+highest dimension is on the very right side of the line.
 
 First, the rank of the free part of the group is printed. Afterwards the
 torsion parts are printed in the form `Z_n`. The torsion parts will be
