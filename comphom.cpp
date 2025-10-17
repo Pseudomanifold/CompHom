@@ -4,6 +4,7 @@
 	@author Bastian Rieck
 */
 
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -91,35 +92,37 @@ int main(int argc, char* argv[])
 			continue;
 		}
 
-		size_t w_prev 	= 0; 		// Previous rank of the group of boundaries
-		size_t z_cur  	= 0; 		// Current rank of the group of cycles
-		vector<unsigned long> b_prev; 	// Torsion coefficients from the previous dimension
+		size_t w_prev = 0;		        // Previous rank of the group of boundaries
+		size_t z_cur	= 0;		        // Current rank of the group of cycles
+		vector<unsigned long> b_prev; // Torsion coefficients from the previous dimension
 
-		size_t max_dim 	= data[i][0].vertices.size();
+		size_t max_dim = data[i][0].vertices.size();
 
 		vector<chain> boundaries;
 		for(size_t j = 0; j < data[i].size(); j++)
 			boundaries.push_back(data[i][j].boundary());
 
+    vector<string> parts;
+
 		out << "(";
 		for(size_t dim = 0; dim < max_dim; dim++)
 		{
-			vector<simplex> generators 	= find_generators(boundaries);
-			matrix matrix_boundaries 	= create_matrix(generators, boundaries);
-			matrix matrix_snf		= matrix_boundaries.nf_smith();
+			vector<simplex> generators = find_generators(boundaries);
+			matrix matrix_boundaries = create_matrix(generators, boundaries);
+			matrix matrix_snf = matrix_boundaries.nf_smith();
 
-			// Output/store the values for the next dimension
-	
+			// Output/store the values for the next dimension. We store this
+      // in pieces because we need to flip the order later.
+      ostringstream oss;
 			z_cur = matrix_snf.get_num_zero_cols();
-			out << z_cur - w_prev;
+			oss << z_cur - w_prev;
 			if(b_prev.size() > 0)
 			{
 				for(size_t j = 0; j < b_prev.size(); j++)
-					out << "+Z_" << b_prev[j]; // It is assumed that the coefficients are integers
+					oss << "+Z_" << b_prev[j]; // It is assumed that the coefficients are integers
 			}
-			
-			if(dim < max_dim - 1)
-				out << ",";
+
+      parts.push_back(oss.str());
 
 			w_prev = matrix_snf.get_num_non_zero_rows();
 			b_prev = matrix_snf.get_torsion();
@@ -130,7 +133,17 @@ int main(int argc, char* argv[])
 			for(size_t num_gens = 0; num_gens < generators.size(); num_gens++)
 				boundaries.push_back(generators[num_gens].boundary());
 		}
-		
+
+    reverse(parts.begin(), parts.end());
+    for(size_t j = 0; j < parts.size(); j++)
+    {
+      out << parts[j];
+
+      if(j < parts.size() - 1)
+			  out << ",";
+
+    }
+
 		out << ")\n";
 		cout << "." << flush;
 
