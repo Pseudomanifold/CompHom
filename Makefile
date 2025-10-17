@@ -1,5 +1,5 @@
 CC          = g++
-CCFLAGS     = -c -g
+CCFLAGS     = -c -g -O11
 LIBS        = -L /usr/local/lib
 INCLUDES    = -I /usr/local/include
 LDFLAGS     = 
